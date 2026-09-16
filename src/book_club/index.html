@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sci-Fi Books for Book Club - ICSF</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <script type="module" src="/components/site-header.ts"></script>
+    <script type="module" src="/components/site-nav.ts"></script>
+    <script type="module" src="/components/site-footer.ts"></script>
+    <style>
+        #grid .thumb {
+            box-sizing: border-box;
+            width: 170px;
+            height: 325px;
+            overflow: hidden;
+        }
+        #grid .thumb .book-title {
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <site-header subtitle="Sci-Fi Books from S.F. Masterworks for Book Club"></site-header>
+    <site-nav></site-nav>
+
+    <p id="count-text" class="center">Loading books&hellip;</p>
+
+    <p class="center" id="controls">
+      <input type="text" id="search-box" placeholder="Search by title or author&hellip;" />
+      <select id="sort-order">
+        <option value="title">Sort: Title (A&ndash;Z)</option>
+        <option value="author">Sort: Author (A&ndash;Z)</option>
+        <option value="pages">Sort: Page count</option>
+      </select>
+    </p>
+
+
+    <div id="grid"></div>
+
+    <p id="empty-state" class="center" style="display:none;"></p>
+
+    <div class="clear-fix"></div>
+
+    
+    <site-footer></site-footer>
+
+    <script>
+        const DATA_URL = "./books.json";
+
+        let allBooks = [];
+
+        async function loadBooks() {
+          try {
+            const res = await fetch(DATA_URL);
+            if (!res.ok) throw new Error("File not found");
+            allBooks = await res.json();
+            document.getElementById("count-text").textContent =
+              `${allBooks.length} book${allBooks.length === 1 ? "" : "s"} in your collection`;
+            renderBooks(allBooks);
+            wireControls();
+          } catch (err) {
+            document.getElementById("count-text").textContent = "";
+            const emptyEl = document.getElementById("empty-state");
+            emptyEl.style.display = "block";
+            emptyEl.innerHTML = `
+              <strong>Couldn't load book data.</strong><br/>`;
+          }
+        }
+
+        function formatPages(book) {
+          if (!book.page_count) return null;
+          return `${book.page_count} pages`;
+        }
+
+  function renderBooks(books) {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    if (books.length === 0) {
+      grid.innerHTML = `<p class="center">No books match your filters.</p>`;
+      return;
+    }
+
+    books.forEach((book) => {
+      const title = book.title;
+      const author = book.author;
+      const pages = formatPages(book);
+      const link = book.openlibrary_url || "";
+
+      const thumb = document.createElement("a");
+      thumb.className = "thumb";
+      thumb.style.textDecoration = "none";
+      thumb.style.color = "inherit";
+      if (link) {
+        thumb.href = link;
+        thumb.target = "_blank";
+        thumb.rel = "noopener noreferrer";
+      }
+      thumb.dataset.title = (title || "").toLowerCase();
+      thumb.dataset.author = (author || "").toLowerCase();
+      thumb.dataset.pages = book.page_count || 0;
+
+      thumb.innerHTML = `
+        ${
+          book.cover_url
+            ? `<img src="${book.cover_url}" alt="Cover of ${title}" loading="lazy" style="width:130px;height:190px;object-fit:cover;" />`
+            : `<span style="display:block;width:100px;height:150px;margin:0 10px 5px;line-height:1.2em;font-size:0.85em;font-style:italic;color:#666;">(no cover available)</span>`
+        }
+        <span><b>${title || "Untitled"}</b></span>
+        <span>${author || "Unknown author"}</span>
+        <span>${pages || ""}</span>
+      `;
+
+      grid.appendChild(thumb);
+    });
+  }
+
+  function applyFiltersAndSort() {
+    const query = document.getElementById("search-box").value.trim().toLowerCase();
+    const sortOrder = document.getElementById("sort-order").value;
+
+    let filtered = allBooks.filter((book) => {
+      const title = (book.title || "").toLowerCase();
+      const author = (book.author || "").toLowerCase();
+      const matchesQuery = !query || title.includes(query) || author.includes(query);
+      return matchesQuery;
+    });
+
+    filtered.sort((a, b) => {
+      if (sortOrder === "pages") {
+        return (a.page_count || 0) - (b.page_count || 0);
+      }
+      if (sortOrder === "author") {
+        const aAuthor = (a.author || "").toLowerCase();
+        const bAuthor = (b.author || "").toLowerCase();
+        return aAuthor.localeCompare(bAuthor);
+      }
+      const aTitle = (a.title || "").toLowerCase();
+      const bTitle = (b.title || "").toLowerCase();
+      return aTitle.localeCompare(bTitle);
+    });
+
+    renderBooks(filtered);
+  }
+
+  function wireControls() {
+    document.getElementById("search-box").addEventListener("input", applyFiltersAndSort);
+    document.getElementById("sort-order").addEventListener("change", applyFiltersAndSort);
+  }
+
+  loadBooks();
+</script>
+
+</body>
+</html> 
