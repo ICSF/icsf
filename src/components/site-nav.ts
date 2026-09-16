@@ -10,24 +10,28 @@ class SiteNav extends HTMLElement {
     const submenuParent = this.getAttribute('submenu-parent') ?? '';
 
     const navItems = [
-      { href: '', label: 'Home' },
-      { href: 'events/', label: 'Events' },
-      { href: 'library/', label: 'Library' },
-      { href: 'committee/', label: 'Committee' },
-      { href: 'publications/', label: 'Publications' },
-      { href: 'picocon/', label: 'Picocon' },
-      { href: 'quotes/', label: 'Quotes' },
-      { href: 'gallery/', label: 'Gallery' },
-      { href: 'history/', label: 'History' },
+      {href: '', label: 'Home'},
+      {href: 'events/', label: 'Events'},
+      {href: 'library/', label: 'Library'},
+      {href: 'committee/', label: 'Committee'},
+      {href: 'publications/', label: 'Publications'},
+      {href: 'picocon/', label: 'Picocon'},
+      {href: 'quotes/', label: 'Quotes'},
+      //{ href: 'gallery/', label: 'Gallery' },
+      {href: 'history/', label: 'History'},
     ];
 
     this.innerHTML = `
       <nav>
-        ${navItems.map(item => `
+        ${
+        navItems
+            .map(
+                item => `
           ${this.link(item.href, item.label, path)}
-          ${item.href === submenuParent && extraLinks.length > 0
-            ? extraLinks.map(l => this.sublink(l.href, l.label, path)).join('')
-            : ''}
+          ${
+                    item.href === submenuParent && extraLinks.length > 0 ?
+                        extraLinks.map(l => this.sublink(l.href, l.label, path)).join('') :
+                        ''}
         `).join('')}
       </nav>
     `;
@@ -47,7 +51,6 @@ class SiteNav extends HTMLElement {
     const isActive = currentPath === fullHref;
     return `<a href="${fullHref}" class="subnav${isActive ? ' active' : ''}">${label}</a>`;
   }
-
 }
 
 customElements.define('site-nav', SiteNav);

@@ -27,7 +27,7 @@ The website is built by running `npm run build`
 
 ### Step 1: src/build.ts
 This script runs firsts, generating the `gallery` page, and the `publications` page, as these HTML pages are easier to automate than to write by hand.
-- Gallery (`src/gallery/gallery.ts`): scans `public/gallery/` for album folders, uses the first image in each album as a thumbnail, and writes `src/gallery/index.html` to display the page. It also generates a `photos.json` inside each album folder, listing all of the photos in an album, which the album page fetches at runtime.
+- Gallery (`src/gallery/gallery.ts`): scans `public/gallery/` for album folders, uses the first image in each album as a thumbnail, and writes `src/gallery/index.html` to display the page. It also generates a `photos.json` inside each album folder, listing all of the photos in an album, which the album page fetches at runtime. This page has been disabled for safeguarding reasons. To re-enable, move the `gallery/` directory into the `public/` directory, uncomment `buildGallery()` in build.ts, and rename `src/gallery/album/album.html`
 - Publications (`src/publications/publications.ts`): scans `public/publications/` for PDFs, parses the filename to extract the date, title and editor, and writes `src/publications/index.html` to display the page.
 - History (`src/history/history.ts`): looks at `src/history/events.json`, generates HTML for each event, and writes `src/history/index.html`. 
 

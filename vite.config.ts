@@ -13,7 +13,8 @@ export default defineConfig(
         rollupOptions: {
           // this finds all the html files, but filters any file ending in '-template.html'
           input:
-              glob.sync('**/*.html', {cwd: './src'}).filter((f) => !f.endsWith('-template.html')),
+              glob.sync('**/*.html', {cwd: './src'})
+                  .filter((f) => !f.endsWith('-template.html') && f !== 'gallery/album/index.html'),
         },
       },
     }));
