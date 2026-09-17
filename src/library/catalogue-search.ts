@@ -135,9 +135,9 @@ function goToPage(page: number): void {
 
   const headerEl = document.querySelector('site-header');
   if (headerEl) {
-    headerEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+    headerEl.scrollIntoView({ behavior: 'auto', block: 'start' });
   } else {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }
 }
 
