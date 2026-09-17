@@ -373,3 +373,165 @@ td
 	color: white;
 	text-decoration: none;
 }
+
+/*****************************************************
+ * Catalogue Search Grid & Cards
+ *****************************************************/
+
+/* Search Bar & Header */
+.catalogue-search-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.search-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.search-input-wrapper input[type="search"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid rgba(0, 0, 128, 0.25);
+  border-radius: 6px;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input-wrapper input[type="search"]:focus {
+  outline: none;
+  border-color: rgba(0, 0, 128, 0.75);
+  box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.15);
+}
+
+.catalogue-status {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0;
+}
+
+/* Grid Layout */
+.catalogue-results-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Individual Book Cards */
+.catalogue-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 128, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.catalogue-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 128, 0.12);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #111;
+}
+
+.card-author {
+  font-size: 0.95rem;
+  color: #333;
+  font-style: italic;
+}
+
+.card-series {
+  font-size: 0.85rem;
+  color: #000080;
+  background-color: rgba(0, 0, 128, 0.08);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 0.25rem;
+  align-self: flex-start;
+}
+
+.card-footer {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.card-isbn {
+  font-size: 0.8rem;
+  color: #777;
+  font-family: monospace;
+}
+
+.catalogue-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  color: #666;
+}
+
+/* Pagination Footer */
+.catalogue-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.catalogue-pagination button {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.95rem;
+  background-color: rgba(0, 0, 128, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.catalogue-pagination button:hover:not(:disabled) {
+  background-color: rgba(0, 0, 128, 1);
+}
+
+.catalogue-pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

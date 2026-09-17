@@ -71,21 +71,28 @@ function renderPage(): void {
 
   resultsEl.innerHTML = pageItems
     .map((item) => {
-      const seriesPart =
-        item.series != null
-          ? ` — <em>${escapeHtml(item.series)}${item.series_num != null || item.series_num != '' ? ` #${item.series_num}` : ''}</em>`
-          : '';
-    
       // display names like "DVD" or "Video" without the "by" prefix
-      const authorPart = item.author_name ? 
-        (FORMATS.includes(item.author_name.toLocaleLowerCase()) ? ' —' : ' by ') + 
-        `${escapeHtml(item.author_name)}` 
+      const isFormat = item.author_name ? FORMATS.includes(item.author_name.toLowerCase()) : false;
+      const authorText = item.author_name ? escapeHtml(item.author_name) : '';
+      
+      const seriesBadge = item.series 
+        ? `<div class="card-series">${escapeHtml(item.series)}${item.series_num ? ` #${escapeHtml(item.series_num)}` : ''}</div>`
         : '';
-      const isbnPart = item.isbn ? ` <span class="catalogue-isbn">ISBN: ${escapeHtml(item.isbn)}</span>` : '';
 
-      return `<li class="catalogue-item">
-        <span class="catalogue-title">${escapeHtml(item.title)}</span>${seriesPart}${authorPart}${isbnPart}
-      </li>`;
+      const isbnBadge = item.isbn 
+        ? `<div class="card-isbn">ISBN: ${escapeHtml(item.isbn)}</div>` 
+        : '';
+
+      return `
+        <li class="catalogue-card">
+          <div class="card-body">
+            <h3 class="card-title">${escapeHtml(item.title)}</h3>
+            ${authorText ? `<div class="card-author">${isFormat ? authorText : `by ${authorText}`}</div>` : ''}
+            ${seriesBadge}
+          </div>
+          ${isbnBadge ? `<div class="card-footer">${isbnBadge}</div>` : ''}
+        </li>
+      `;
     })
     .join('');
 
@@ -142,9 +149,6 @@ async function loadCatalogue(): Promise<void> {
   if (!statusEl) return;
 
   try {
-    // A GET query with no input still needs the `?input=` param present
-    // per tRPC's HTTP spec, so we pass an empty object.
-    //TODO: try without this
     const response = await fetch(`${API_BASE}/api/catalogueList`);
 
     if (!response.ok) {
@@ -168,7 +172,6 @@ async function loadCatalogue(): Promise<void> {
     statusEl.textContent = 'Unable to load the catalogue right now. Please try again later.';
   }
 }
-
 
 searchInput?.addEventListener('input', () => {
   if (debounceHandle !== null) {
