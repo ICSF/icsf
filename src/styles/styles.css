@@ -496,7 +496,7 @@ td
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 0rem;
 }
 
 .catalogue-pagination button {

@@ -31,9 +31,6 @@ let debounceHandle: ReturnType<typeof setTimeout> | null = null
 const searchInput = document.getElementById('catalogue-search-input') as HTMLInputElement | null;
 const statusEl = document.getElementById('catalogue-status');
 const resultsEl = document.getElementById('catalogue-results');
-const prevPageBtns = document.querySelectorAll<HTMLButtonElement>('.catalogue-prev-page');
-const nextPageBtns = document.querySelectorAll<HTMLButtonElement>('.catalogue-next-page');
-const pageIndicatorEls = document.querySelectorAll('.catalogue-page-indicator');
 
 const HTML_ESCAPE_LOOKUP: Record<string, string> = {
   '&': '&amp;',
@@ -102,15 +99,20 @@ function renderPage(): void {
 function updatePaginationControls(): void {
   const pages = totalPages();
 
-  pageIndicatorEls.forEach((el) => {
+  // Re-query dynamically to guarantee elements are present in the DOM
+  const indicators = document.querySelectorAll('.catalogue-page-indicator');
+  const prevBtns = document.querySelectorAll<HTMLButtonElement>('.catalogue-prev-page');
+  const nextBtns = document.querySelectorAll<HTMLButtonElement>('.catalogue-next-page');
+
+  indicators.forEach((el) => {
     el.textContent = `Page ${currentPage} of ${pages}`;
   });
 
-  prevPageBtns.forEach((btn) => {
+  prevBtns.forEach((btn) => {
     btn.disabled = currentPage <= 1;
   });
 
-  nextPageBtns.forEach((btn) => {
+  nextBtns.forEach((btn) => {
     btn.disabled = currentPage >= pages;
   });
 
@@ -124,6 +126,7 @@ function updatePaginationControls(): void {
         : `Showing ${start}–${end} of ${total} item${total === 1 ? '' : 's'}.`;
   }
 }
+
 
 function goToPage(page: number): void {
   const pages = totalPages();
@@ -191,16 +194,18 @@ searchInput?.addEventListener('input', () => {
 });
 
 // Attach event listeners to all prev/next buttons
-prevPageBtns.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    goToPage(currentPage - 1);
-  });
-});
+document.addEventListener('click', (e) => {
+  const target = e.target as HTMLElement | null;
+  if (!target) return;
 
-nextPageBtns.forEach((btn) => {
-  btn.addEventListener('click', () => {
+  const prevBtn = target.closest<HTMLButtonElement>('.catalogue-prev-page');
+  const nextBtn = target.closest<HTMLButtonElement>('.catalogue-next-page');
+
+  if (prevBtn && !prevBtn.disabled) {
+    goToPage(currentPage - 1);
+  } else if (nextBtn && !nextBtn.disabled) {
     goToPage(currentPage + 1);
-  });
+  }
 });
 
 if (statusEl) {
