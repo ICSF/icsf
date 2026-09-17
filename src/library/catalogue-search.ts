@@ -131,9 +131,9 @@ function goToPage(page: number): void {
   renderPage();
 
   // Scroll back to the search input / top of results
-  const searchPanel = document.querySelector('.catalogue-search-panel');
-  if (searchPanel) {
-    searchPanel.scrollIntoView({ behavior: 'instant', block: 'start' });
+  const headerEl = document.querySelector('site-header');
+  if (headerEl) {
+    headerEl.scrollIntoView({ behavior: 'instant', block: 'start' });
   } else {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }

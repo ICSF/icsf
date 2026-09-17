@@ -427,7 +427,7 @@ td
 
 /* Individual Book Cards */
 .catalogue-card {
-  background: #8f8fb679;
+  background: #8f8fb64b;
   border: 1px solid rgba(0, 0, 128, 0.15);
   border-radius: 8px;
   padding: 1.25rem;
@@ -446,21 +446,21 @@ td
 
 .card-title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.3;
   color: #111;
 }
 
 .card-author {
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   color: #333;
   font-style: italic;
 }
 
 .card-series {
-  font-size: 0.85rem;
-  color: #000080;
+  font-size: 0.7rem;
+  color: #000059;
   background-color: rgba(0, 0, 128, 0.08);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -476,7 +476,7 @@ td
 }
 
 .card-isbn {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #777;
   font-family: monospace;
 }
