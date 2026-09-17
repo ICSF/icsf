@@ -145,7 +145,7 @@ async function loadCatalogue(): Promise<void> {
     // A GET query with no input still needs the `?input=` param present
     // per tRPC's HTTP spec, so we pass an empty object.
     //TODO: try without this
-    const response = await fetch(`${API_BASE}/api/catalogueList?input=${encodeURIComponent('{}')}`);
+    const response = await fetch(`${API_BASE}/api/catalogueList`);
 
     if (!response.ok) {
       throw new Error(`Request failed: ${response.status}`);
