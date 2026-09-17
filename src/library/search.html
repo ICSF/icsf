@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalogue Search - ICSF</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <script type="module" src="/components/site-header.ts"></script>
+    <script type="module" src="/components/site-nav.ts"></script>
+    <script type="module" src="/components/site-footer.ts"></script>
+    <script type="module" src="catalogue-search.ts"></script>
+</head>
+<body>
+    <site-header subtitle="Catalogue Search"></site-header>
+	<site-nav 
+		submenu-parent="library/"
+		extra-links='[
+        {"href": "library/getting-to.html", "label": "Finding Us"},
+		{"href": "library/bookshops.html", "label": "Bookshops"},
+        {"href": "library/search.html", "label": "Search"}
+    	]'>
+	</site-nav>
+
+    <main class="main-content">
+      <h1>Catalogue Search</h1>
+      <p class="help">Browse everything in the ICSF library. Start typing to filter by title, author, or series.</p>
+
+      <div class="catalogue-search-panel">
+        <label for="catalogue-search-input">Search</label>
+        <input
+          id="catalogue-search-input"
+          type="search"
+          placeholder="Search by title, author, or series..."
+          autocomplete="off"
+        />
+
+        <p id="catalogue-status" aria-live="polite">Loading catalogue&hellip;</p>
+
+        <ul id="catalogue-results" class="catalogue-results-list"></ul>
+      </div>
+    </main>
+
+    <site-footer></site-footer>
+</body>
+</html>
