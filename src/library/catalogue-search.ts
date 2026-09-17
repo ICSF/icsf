@@ -1,6 +1,6 @@
 const API_BASE = 'https://library-database-system-nine.vercel.app'
 
-const MAX_RENDERED_ITEMS = 200;
+const PAGE_SIZE = 200;
 
 // typing delay to avoid excessive re-rendering while the user is typing
 const DEBOUNCE_MS = 120;
@@ -22,11 +22,18 @@ type SearchableCatalogueRow = CatalogueRow & {
 };
 
 let allItems: SearchableCatalogueRow[] = [];
+
+let currentResults: SearchableCatalogueRow[] = [];
+let currentPage = 1;
+
 let debounceHandle: ReturnType<typeof setTimeout> | null = null 
 
 const searchInput = document.getElementById('catalogue-search-input') as HTMLInputElement | null;
 const statusEl = document.getElementById('catalogue-status');
 const resultsEl = document.getElementById('catalogue-results');
+const prevPageBtn = document.getElementById('catalogue-prev-page') as HTMLButtonElement | null;
+const nextPageBtn = document.getElementById('catalogue-next-page') as HTMLButtonElement | null;
+const pageIndicatorEl = document.getElementById('catalogue-page-indicator');
 
 const HTML_ESCAPE_LOOKUP: Record<string, string> = {
   '&': '&amp;',
@@ -46,17 +53,23 @@ function buildSearchBlob(item: CatalogueRow): string {
     .toLowerCase();
 }
 
-function renderItems(items: SearchableCatalogueRow[], totalMatchCount: number): void {
+function totalPages(): number {
+  return Math.max(1, Math.ceil(currentResults.length / PAGE_SIZE));
+}
+
+function renderPage(): void {
   if (!resultsEl) return;
 
-  if (items.length === 0) {
+  if (currentResults.length === 0) {
     resultsEl.innerHTML = '<li class="catalogue-empty">No items match your search.</li>';
+    updatePaginationControls();
     return;
   }
 
-  const visible = items.slice(0, MAX_RENDERED_ITEMS);  
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = currentResults.slice(start, start + PAGE_SIZE);
 
-  const rows = visible
+  resultsEl.innerHTML = pageItems
     .map((item) => {
       const seriesPart =
         item.series != null
@@ -76,13 +89,41 @@ function renderItems(items: SearchableCatalogueRow[], totalMatchCount: number): 
     })
     .join('');
 
-    const overflowNotice =
-    totalMatchCount > MAX_RENDERED_ITEMS
-      ? `<li class="catalogue-more-notice">Showing first ${MAX_RENDERED_ITEMS} of ${totalMatchCount} matches — refine your search to narrow results.</li>`
-      : '';
-
-    resultsEl.innerHTML = rows + overflowNotice;
+    updatePaginationControls();
 }
+
+function updatePaginationControls(): void {
+  const pages = totalPages();
+
+  if (pageIndicatorEl) {
+    pageIndicatorEl.textContent = `Page ${currentPage} of ${pages}`;
+  }
+
+  if (prevPageBtn) {
+    prevPageBtn.disabled = currentPage <= 1;
+  }
+
+  if (nextPageBtn) {
+    nextPageBtn.disabled = currentPage >= pages;
+  }
+
+  if (statusEl) {
+    const total = currentResults.length;
+    const start = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(total, currentPage * PAGE_SIZE);
+    statusEl.textContent =
+      total === 0
+        ? '0 items match.'
+        : `Showing ${start}–${end} of ${total} item${total === 1 ? '' : 's'}.`;
+  }
+}
+
+function goToPage(page: number): void {
+  const pages = totalPages();
+  currentPage = Math.min(Math.max(1, page), pages);
+  renderPage();
+}
+
 
 function filterCatalogue(query: string): SearchableCatalogueRow[] {
   const q = query.trim().toLowerCase();
@@ -92,15 +133,9 @@ function filterCatalogue(query: string): SearchableCatalogueRow[] {
 }
 
 function runFilterAndRender(query: string): void {
-  const filtered = filterCatalogue(query);
-  renderItems(filtered, filtered.length);
-
-  if (statusEl) {
-    statusEl.textContent =
-      filtered.length > MAX_RENDERED_ITEMS
-        ? `${filtered.length} items match (showing first ${MAX_RENDERED_ITEMS}).`
-        : `${filtered.length} item${filtered.length === 1 ? '' : 's'} match.`;
-  }
+  currentResults = filterCatalogue(query);
+  currentPage = 1; 
+  renderPage();
 }
 
 async function loadCatalogue(): Promise<void> {
@@ -125,8 +160,9 @@ async function loadCatalogue(): Promise<void> {
       _searchBlob: buildSearchBlob(item),
     }));
 
-    statusEl.textContent = `${allItems.length} item${allItems.length === 1 ? '' : 's'} in the catalogue.`;
-    renderItems(allItems, allItems.length);
+    currentResults = allItems;
+    currentPage = 1;
+    renderPage();
   } catch (err) {
     console.error('[catalogue-search] failed to load catalogue:', err);
     statusEl.textContent = 'Unable to load the catalogue right now. Please try again later.';
@@ -143,5 +179,17 @@ searchInput?.addEventListener('input', () => {
     runFilterAndRender(searchInput.value);
   }, DEBOUNCE_MS);
 });
+
+prevPageBtn?.addEventListener('click', () => {
+  goToPage(currentPage - 1);
+});
+
+nextPageBtn?.addEventListener('click', () => {
+  goToPage(currentPage + 1);
+});
+
+if (statusEl) {
+  statusEl.textContent = 'Loading catalogue…';
+}
 
 void loadCatalogue();
