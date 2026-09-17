@@ -31,9 +31,9 @@ let debounceHandle: ReturnType<typeof setTimeout> | null = null
 const searchInput = document.getElementById('catalogue-search-input') as HTMLInputElement | null;
 const statusEl = document.getElementById('catalogue-status');
 const resultsEl = document.getElementById('catalogue-results');
-const prevPageBtn = document.getElementById('catalogue-prev-page') as HTMLButtonElement | null;
-const nextPageBtn = document.getElementById('catalogue-next-page') as HTMLButtonElement | null;
-const pageIndicatorEl = document.getElementById('catalogue-page-indicator');
+const prevPageBtns = document.querySelectorAll<HTMLButtonElement>('.catalogue-prev-page');
+const nextPageBtns = document.querySelectorAll<HTMLButtonElement>('.catalogue-next-page');
+const pageIndicatorEls = document.querySelectorAll('.catalogue-page-indicator');
 
 const HTML_ESCAPE_LOOKUP: Record<string, string> = {
   '&': '&amp;',
@@ -102,17 +102,17 @@ function renderPage(): void {
 function updatePaginationControls(): void {
   const pages = totalPages();
 
-  if (pageIndicatorEl) {
-    pageIndicatorEl.textContent = `Page ${currentPage} of ${pages}`;
-  }
+  pageIndicatorEls.forEach((el) => {
+    el.textContent = `Page ${currentPage} of ${pages}`;
+  });
 
-  if (prevPageBtn) {
-    prevPageBtn.disabled = currentPage <= 1;
-  }
+  prevPageBtns.forEach((btn) => {
+    btn.disabled = currentPage <= 1;
+  });
 
-  if (nextPageBtn) {
-    nextPageBtn.disabled = currentPage >= pages;
-  }
+  nextPageBtns.forEach((btn) => {
+    btn.disabled = currentPage >= pages;
+  });
 
   if (statusEl) {
     const total = currentResults.length;
@@ -130,7 +130,6 @@ function goToPage(page: number): void {
   currentPage = Math.min(Math.max(1, page), pages);
   renderPage();
 
-  // Scroll back to the search input / top of results
   const headerEl = document.querySelector('site-header');
   if (headerEl) {
     headerEl.scrollIntoView({ behavior: 'instant', block: 'start' });
@@ -191,12 +190,17 @@ searchInput?.addEventListener('input', () => {
   }, DEBOUNCE_MS);
 });
 
-prevPageBtn?.addEventListener('click', () => {
-  goToPage(currentPage - 1);
+// Attach event listeners to all prev/next buttons
+prevPageBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    goToPage(currentPage - 1);
+  });
 });
 
-nextPageBtn?.addEventListener('click', () => {
-  goToPage(currentPage + 1);
+nextPageBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    goToPage(currentPage + 1);
+  });
 });
 
 if (statusEl) {
