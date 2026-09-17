@@ -1,6 +1,6 @@
 const API_BASE = 'https://library-database-system-nine.vercel.app'
 
-const PAGE_SIZE = 200;
+const PAGE_SIZE = 100;
 
 // typing delay to avoid excessive re-rendering while the user is typing
 const DEBOUNCE_MS = 120;
@@ -129,6 +129,14 @@ function goToPage(page: number): void {
   const pages = totalPages();
   currentPage = Math.min(Math.max(1, page), pages);
   renderPage();
+
+  // Scroll back to the search input / top of results
+  const searchPanel = document.querySelector('.catalogue-search-panel');
+  if (searchPanel) {
+    searchPanel.scrollIntoView({ behavior: 'instant', block: 'start' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
 }
 
 
